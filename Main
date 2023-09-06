@@ -1,0 +1,56 @@
+echo "# GM_inv_exploration" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/KyleVargo/GM_inv_exploration.git
+git push -u origin main
+
+
+
+-- Looking at the avg List price 
+
+Select Avg([List Price]) as AVGList
+FROM (
+Select [Part Number], [Part Description] ,[List Price], OnHandQty
+from PartsInv..['Full Inventory$']
+where OnHandQty >0 and [List Price] >0
+) as Subquery
+
+--Looking at lowest List Price
+
+Select min([List Price]) as MinList
+FROM (
+Select [Part Number], [Part Description] ,[List Price], OnHandQty
+from PartsInv..['Full Inventory$']
+where OnHandQty >0 and [List Price] >0
+) as Subquery
+
+--Looking at the Highest List Price
+
+Select Max([List Price]) as MaxList
+FROM (
+Select [Part Number], [Part Description] ,[List Price], OnHandQty
+from PartsInv..['Full Inventory$']
+where OnHandQty >0 and [List Price] >0
+) as Subquery
+
+--Shows a Full List of Invtory minus anything that shows >0 (negitive on hands or any parts not in stock)
+-- unfortunately due to GM's MyPriceLink a majority of the List price for parts Shows up as $0
+Select [Part Number], [Part Description] ,[List Price], OnHandQty
+from PartsInv..['Full Inventory$']
+where OnHandQty >0 and [List Price] >0
+order by [List Price]desc ,[Part Number],[Part Description], OnHandQty 
+
+-- Core Values
+Select [Core Value], OnHandQty
+from PartsInv..['Full Inventory$']
+where OnHandQty >0 and [Core Value] >0
+order by [Core Value] desc
+
+-- parts on hold, that also shows the TotalList
+Select [Hold Qty], [List Price], [Part Description], ([Hold Qty] * [List Price]) as TotalListPrice
+from ['Full Inventory$']
+where [Hold Qty] >0
+order by TotalListPrice desc
+
